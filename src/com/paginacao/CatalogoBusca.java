@@ -6,7 +6,7 @@ import java.util.stream.Collectors;
 public class CatalogoBusca {
 
     /**
-     * Exercício 5 — Busca livros pelo título e retorna a página solicitada do resultado.
+     * Exercício 5 — Busca livros pelo título e retorna a página solicitada do resultado. ✔
      *
      * A busca deve ser case-insensitive.
      * A paginação deve ocorrer APÓS o filtro (sobre os resultados filtrados).
@@ -20,6 +20,11 @@ public class CatalogoBusca {
     public List<Livro> buscarComPaginacao(List<Livro> livros, String termo,
                                           int pagina, int tamanhoPagina) {
         // TODO: implemente usando filter, skip e limit
-        throw new UnsupportedOperationException("Não implementado");
+        return livros.stream()
+                .filter(l -> l.getTitulo().toLowerCase().contains(termo.toLowerCase()))
+                .skip((long) pagina * tamanhoPagina)
+                .limit(tamanhoPagina)
+                .toList();
+        // throw new UnsupportedOperationException("Não implementado"); removido após implementação
     }
 }
