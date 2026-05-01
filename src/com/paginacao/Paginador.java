@@ -18,8 +18,23 @@ public class Paginador<T> {
      * @return lista com os elementos da página solicitada
      */
     public List<T> paginar(List<T> lista, int pagina, int tamanhoPagina) {
-        // TODO: implemente usando skip e limit
-        throw new UnsupportedOperationException("Não implementado");
+        
+        if (lista == null) {
+            throw new IllegalArgumentException("Lista não pode ser nula");
+        }
+        if (pagina < 0) {
+            throw new IllegalArgumentException("Página não pode ser negativa");
+        }
+        if (tamanhoPagina <= 0) {
+            throw new IllegalArgumentException("Tamanho da página deve ser maior que zero");
+        }
+
+        long offsetElementos = (long) pagina * tamanhoPagina;
+
+        return lista.stream()
+                .skip(offsetElementos)
+                .limit(tamanhoPagina)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -30,8 +45,17 @@ public class Paginador<T> {
      * @return lista com no máximo n elementos
      */
     public List<T> primeirosN(List<T> lista, int n) {
-        // TODO: implemente usando limit
-        throw new UnsupportedOperationException("Não implementado");
+
+        if (lista == null) {
+            throw new IllegalArgumentException("Lista não pode ser nula");
+        }
+        if (n < 0) {
+            throw new IllegalArgumentException("Quantidade de elementos não pode ser negativa");
+        }
+
+        return lista.stream()
+                .limit(n)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -42,8 +66,17 @@ public class Paginador<T> {
      * @return lista sem os primeiros n elementos
      */
     public List<T> ignorarN(List<T> lista, int n) {
-        // TODO: implemente usando skip
-        throw new UnsupportedOperationException("Não implementado");
+
+        if (lista == null) {
+            throw new IllegalArgumentException("Lista não pode ser nula");
+        }
+        if (n < 0) {
+            throw new IllegalArgumentException("Quantidade de elementos a ignorar não pode ser negativa");
+        }
+
+        return lista.stream()
+                .skip(n)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -58,7 +91,15 @@ public class Paginador<T> {
      * @return total de páginas
      */
     public int totalPaginas(List<T> lista, int tamanhoPagina) {
-        // TODO: implemente
-        throw new UnsupportedOperationException("Não implementado");
+        
+        if (lista == null) {
+            throw new IllegalArgumentException("Lista não pode ser nula");
+        }
+        if (tamanhoPagina <= 0) {
+            throw new IllegalArgumentException("Tamanho da página deve ser maior que zero");
+        }
+
+        int totalElementos = lista.size();
+        return totalElementos % tamanhoPagina == 0 ? (totalElementos / tamanhoPagina) : (totalElementos / tamanhoPagina) + 1;
     }
 }

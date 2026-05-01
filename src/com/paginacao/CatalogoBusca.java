@@ -19,7 +19,47 @@ public class CatalogoBusca {
      */
     public List<Livro> buscarComPaginacao(List<Livro> livros, String termo,
                                           int pagina, int tamanhoPagina) {
-        // TODO: implemente usando filter, skip e limit
-        throw new UnsupportedOperationException("Não implementado");
+        
+        try {
+            List<Livro> livrosFiltrados = buscar(livros, termo);
+            
+            Paginador<Livro> paginador = new Paginador<>(); 
+            
+            List<Livro> listaPaginada = paginador.paginar(livrosFiltrados, pagina, tamanhoPagina);
+            return listaPaginada;
+        } catch (IllegalArgumentException e) {
+            throw e;
+        }
     }
+
+    public List<Livro> buscar(List<Livro> livros, String termo) {
+        return buscar(livros, termo, false);
+    }
+
+    public List<Livro> buscar(List<Livro> livros, String termo, boolean caseSensitive) {
+        
+        if (livros == null) {
+            throw new IllegalArgumentException("Lista de livros não pode ser nula");
+        }
+        if (termo == null) {
+            throw new IllegalArgumentException("Termo de busca não pode ser nulo");
+        }
+
+        if (caseSensitive) {
+            final String termoNormalizado = termo.trim();
+            return termoNormalizado.isEmpty()
+                    ? livros
+                    : livros.stream()
+                    .filter(livro -> livro.getTitulo().contains(termoNormalizado))
+                    .collect(Collectors.toList());
+        } else {
+            final String termoNormalizado = termo.trim().toLowerCase();
+            return termoNormalizado.isEmpty()
+                    ? livros
+                    : livros.stream()
+                    .filter(livro -> livro.getTitulo().toLowerCase().contains(termoNormalizado))
+                    .collect(Collectors.toList());
+        }
+    }
+
 }
