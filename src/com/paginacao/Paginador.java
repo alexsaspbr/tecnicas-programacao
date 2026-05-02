@@ -19,7 +19,13 @@ public class Paginador<T> {
      */
     public List<T> paginar(List<T> lista, int pagina, int tamanhoPagina) {
         // TODO: implemente usando skip e limit
-        throw new UnsupportedOperationException("Não implementado");
+
+        long deslocamento = (long) pagina * tamanhoPagina;
+
+        return lista.stream()
+                .skip(deslocamento )
+                .limit(tamanhoPagina)
+                .collect(Collectors.toList());
     }
 
     /**
