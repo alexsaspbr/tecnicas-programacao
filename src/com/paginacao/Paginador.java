@@ -51,7 +51,9 @@ public class Paginador<T> {
      */
     public List<T> ignorarN(List<T> lista, int n) {
         // TODO: implemente usando skip
-        throw new UnsupportedOperationException("Não implementado");
+        return lista.stream()
+                .skip(n)
+                .collect(Collectors.toList());
     }
 
     /**
