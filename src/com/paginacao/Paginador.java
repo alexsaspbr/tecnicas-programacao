@@ -18,8 +18,14 @@ public class Paginador<T> {
      * @return lista com os elementos da página solicitada
      */
     public List<T> paginar(List<T> lista, int pagina, int tamanhoPagina) {
-        // TODO: implemente usando skip e limit
-        throw new UnsupportedOperationException("Não implementado");
+        validarLista(lista);
+        validarPagina(pagina);
+        validarTamanhoPagina(tamanhoPagina);
+
+        return lista.stream()
+                .skip((long) pagina * tamanhoPagina)
+                .limit(tamanhoPagina)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -30,8 +36,12 @@ public class Paginador<T> {
      * @return lista com no máximo n elementos
      */
     public List<T> primeirosN(List<T> lista, int n) {
-        // TODO: implemente usando limit
-        throw new UnsupportedOperationException("Não implementado");
+        validarLista(lista);
+        validarElementos(n);
+
+        return lista.stream()
+                .limit(n)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -42,8 +52,12 @@ public class Paginador<T> {
      * @return lista sem os primeiros n elementos
      */
     public List<T> ignorarN(List<T> lista, int n) {
-        // TODO: implemente usando skip
-        throw new UnsupportedOperationException("Não implementado");
+        validarLista(lista);
+        validarElementos(n);
+
+        return lista.stream()
+                .skip(n)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -58,7 +72,33 @@ public class Paginador<T> {
      * @return total de páginas
      */
     public int totalPaginas(List<T> lista, int tamanhoPagina) {
-        // TODO: implemente
-        throw new UnsupportedOperationException("Não implementado");
+        validarLista(lista);
+        validarTamanhoPagina(tamanhoPagina);
+
+        return (lista.size() + tamanhoPagina - 1) / tamanhoPagina;
+    }
+
+    private void validarLista(List<T> lista) {
+        if (lista == null) {
+            throw new IllegalArgumentException("A lista não pode ser nula ou vazia.");
+        }
+    }
+
+    private void validarElementos(int n) {
+        if (n < 0) {
+            throw new IllegalArgumentException("O número de elementos não pode ser negativo.");
+        }
+    }
+
+    private void validarPagina(int pagina) {
+        if(pagina < 0) {
+            throw new IllegalArgumentException("A página não pode ser menor que zero.");
+        }
+    }
+
+    private void validarTamanhoPagina(int tamanhoPagina) {
+        if (tamanhoPagina <= 0) {
+            throw new IllegalArgumentException("O tamanho da página tem que ser maior que zero.");
+        }
     }
 }
