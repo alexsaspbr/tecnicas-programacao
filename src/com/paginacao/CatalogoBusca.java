@@ -19,7 +19,26 @@ public class CatalogoBusca {
      */
     public List<Livro> buscarComPaginacao(List<Livro> livros, String termo,
                                           int pagina, int tamanhoPagina) {
-        // TODO: implemente usando filter, skip e limit
-        throw new UnsupportedOperationException("Não implementado");
+        if (livros == null) {
+            throw new IllegalArgumentException("A lista de livros não pode ser nula ou vazia.");
+        }
+
+        if (termo == null) {
+            throw new IllegalArgumentException("O termo não pode ser nulo.");
+        }
+
+        if(pagina < 0) {
+            throw new IllegalArgumentException("A página não pode ser menor que zero.");
+        }
+
+        if (tamanhoPagina <= 0) {
+            throw new IllegalArgumentException("O tamanho da página tem que ser maior que zero.");
+        }
+
+        return livros.stream()
+                .filter(livro -> livro.getTitulo().toLowerCase().contains(termo.toLowerCase()))
+                .skip((long) pagina * tamanhoPagina)
+                .limit(tamanhoPagina)
+                .collect(Collectors.toList());
     }
 }
