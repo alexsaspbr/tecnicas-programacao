@@ -18,8 +18,14 @@ public class Paginador<T> {
      * @return lista com os elementos da página solicitada
      */
     public List<T> paginar(List<T> lista, int pagina, int tamanhoPagina) {
-        // TODO: implemente usando skip e limit
-        throw new UnsupportedOperationException("Não implementado");
+        validarLista(lista);
+        validarPagina(pagina);
+        validarTamanhoPagina(tamanhoPagina);
+
+        return lista.stream()
+                .skip((long) pagina * tamanhoPagina)
+                .limit(tamanhoPagina)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -60,5 +66,23 @@ public class Paginador<T> {
     public int totalPaginas(List<T> lista, int tamanhoPagina) {
         // TODO: implemente
         throw new UnsupportedOperationException("Não implementado");
+    }
+
+    private void validarLista(List<T> lista) {
+        if (lista == null || lista.isEmpty()) {
+            throw new IllegalArgumentException("A lista não pode ser nula ou vazia.");
+        }
+    }
+
+    private void validarPagina(int pagina) {
+        if(pagina < 0) {
+            throw new IllegalArgumentException("A página não pode ser menor que zero.");
+        }
+    }
+
+    private void validarTamanhoPagina(int tamanhoPagina) {
+        if (tamanhoPagina <= 0) {
+            throw new IllegalArgumentException("O tamanho da página tem que ser maior que zero.");
+        }
     }
 }
