@@ -79,7 +79,7 @@ public class Paginador<T> {
     }
 
     private void validarLista(List<T> lista) {
-        if (lista == null || lista.isEmpty()) {
+        if (lista == null) {
             throw new IllegalArgumentException("A lista não pode ser nula ou vazia.");
         }
     }
