@@ -18,8 +18,10 @@ public class Paginador<T> {
      * @return lista com os elementos da página solicitada
      */
     public List<T> paginar(List<T> lista, int pagina, int tamanhoPagina) {
-        // TODO: implemente usando skip e limit
-        throw new UnsupportedOperationException("Não implementado");
+        return lista.stream()
+                .skip((long) pagina * tamanhoPagina)
+                .limit(tamanhoPagina)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -30,8 +32,9 @@ public class Paginador<T> {
      * @return lista com no máximo n elementos
      */
     public List<T> primeirosN(List<T> lista, int n) {
-        // TODO: implemente usando limit
-        throw new UnsupportedOperationException("Não implementado");
+        return lista.stream()
+                .limit(n)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -42,8 +45,9 @@ public class Paginador<T> {
      * @return lista sem os primeiros n elementos
      */
     public List<T> ignorarN(List<T> lista, int n) {
-        // TODO: implemente usando skip
-        throw new UnsupportedOperationException("Não implementado");
+        return lista.stream()
+                .skip(n)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -58,7 +62,7 @@ public class Paginador<T> {
      * @return total de páginas
      */
     public int totalPaginas(List<T> lista, int tamanhoPagina) {
-        // TODO: implemente
-        throw new UnsupportedOperationException("Não implementado");
+        if (lista == null || lista.isEmpty() || tamanhoPagina <= 0) return 0;
+        return (int) Math.ceil((double) lista.size() / tamanhoPagina);
     }
 }
