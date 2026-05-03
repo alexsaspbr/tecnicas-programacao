@@ -36,8 +36,12 @@ public class Paginador<T> {
      * @return lista com no máximo n elementos
      */
     public List<T> primeirosN(List<T> lista, int n) {
-        // TODO: implemente usando limit
-        throw new UnsupportedOperationException("Não implementado");
+        validarLista(lista);
+        validarElementos(n);
+
+        return lista.stream()
+                .limit(n)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -71,6 +75,12 @@ public class Paginador<T> {
     private void validarLista(List<T> lista) {
         if (lista == null || lista.isEmpty()) {
             throw new IllegalArgumentException("A lista não pode ser nula ou vazia.");
+        }
+    }
+
+    private void validarElementos(int n) {
+        if (n < 0) {
+            throw new IllegalArgumentException("O número de elementos não pode ser negativo.");
         }
     }
 
