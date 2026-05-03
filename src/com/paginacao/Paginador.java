@@ -52,8 +52,12 @@ public class Paginador<T> {
      * @return lista sem os primeiros n elementos
      */
     public List<T> ignorarN(List<T> lista, int n) {
-        // TODO: implemente usando skip
-        throw new UnsupportedOperationException("Não implementado");
+        validarLista(lista);
+        validarElementos(n);
+
+        return lista.stream()
+                .skip(n)
+                .collect(Collectors.toList());
     }
 
     /**
