@@ -30,8 +30,7 @@ public class Paginador<T> {
      * @return lista com no máximo n elementos
      */
     public List<T> primeirosN(List<T> lista, int n) {
-        // TODO: implemente usando limit
-        throw new UnsupportedOperationException("Não implementado");
+        return lista.stream().limit(n).collect(Collectors.toList());
     }
 
     /**
