@@ -1,9 +1,10 @@
 package com.paginacao;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class Paginador<T> {
+public class Paginador<Livro> {
 
     /**
      * Exercício 1 — Retorna os elementos da página solicitada.
@@ -17,9 +18,13 @@ public class Paginador<T> {
      * @param tamanhoPagina quantidade máxima de elementos por página
      * @return lista com os elementos da página solicitada
      */
-    public List<T> paginar(List<T> lista, int pagina, int tamanhoPagina) {
+    public List<Livro> paginar(List<Livro> lista, int pagina, int tamanhoPagina) {
         // TODO: implemente usando skip e limit
-        throw new UnsupportedOperationException("Não implementado");
+
+        return lista.stream()
+                .skip(pagina * tamanhoPagina)
+                .limit(tamanhoPagina)
+                .toList();
     }
 
     /**
@@ -29,9 +34,11 @@ public class Paginador<T> {
      * @param n     quantidade de elementos a retornar
      * @return lista com no máximo n elementos
      */
-    public List<T> primeirosN(List<T> lista, int n) {
+    public List<Livro> primeirosN(List<Livro> lista, int n) {
         // TODO: implemente usando limit
-        throw new UnsupportedOperationException("Não implementado");
+        return lista.stream()
+                .limit(n)
+                .toList();
     }
 
     /**
@@ -41,9 +48,12 @@ public class Paginador<T> {
      * @param n     quantidade de elementos a ignorar
      * @return lista sem os primeiros n elementos
      */
-    public List<T> ignorarN(List<T> lista, int n) {
+    public List<Livro> ignorarN(List<Livro> lista, int n) {
         // TODO: implemente usando skip
-        throw new UnsupportedOperationException("Não implementado");
+        return lista.stream()
+                .skip(n)
+                .toList();
+
     }
 
     /**
@@ -57,8 +67,16 @@ public class Paginador<T> {
      * @param tamanhoPagina quantidade máxima de elementos por página
      * @return total de páginas
      */
-    public int totalPaginas(List<T> lista, int tamanhoPagina) {
+    public int totalPaginas(List<Livro> lista, int tamanhoPagina) {
+
         // TODO: implemente
-        throw new UnsupportedOperationException("Não implementado");
+
+        if (tamanhoPagina <= 0) {
+            throw new IllegalArgumentException("tamanhoPagina deve ser maior que 0");
+        }
+        int totalItens = lista.size();
+
+        return ((totalItens +tamanhoPagina-1) / tamanhoPagina);
+
     }
 }
