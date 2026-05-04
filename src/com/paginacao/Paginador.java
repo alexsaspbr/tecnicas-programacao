@@ -5,21 +5,11 @@ import java.util.stream.Collectors;
 
 public class Paginador<T> {
 
-    /**
-     * Exercício 1 — Retorna os elementos da página solicitada.
-     *
-     * A paginação é baseada em índice zero: pagina=0 retorna a primeira página.
-     *
-     * Dica: para chegar à página correta, quantos elementos você precisa pular?
-     *
-     * @param lista         lista completa de elementos
-     * @param pagina        número da página desejada (começa em 0)
-     * @param tamanhoPagina quantidade máxima de elementos por página
-     * @return lista com os elementos da página solicitada
-     */
     public List<T> paginar(List<T> lista, int pagina, int tamanhoPagina) {
-        // TODO: implemente usando skip e limit
-        throw new UnsupportedOperationException("Não implementado");
+        return lista.stream()
+                .skip((long) pagina * tamanhoPagina)
+                .limit(tamanhoPagina)
+                .collect(Collectors.toList());
     }
 
     /**
