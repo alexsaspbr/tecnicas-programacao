@@ -1,7 +1,8 @@
 package com.paginacao;
 
+import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
+
 
 public class Paginador<T> {
 
@@ -19,7 +20,17 @@ public class Paginador<T> {
      */
     public List<T> paginar(List<T> lista, int pagina, int tamanhoPagina) {
         // TODO: implemente usando skip e limit
-        throw new UnsupportedOperationException("Não implementado");
+           if(lista == null  || lista.isEmpty()){
+               return Collections.emptyList();
+           } else if(pagina <  0  ||  tamanhoPagina <= 0) {
+               throw new UnsupportedOperationException("Não implementado");
+           }  else {
+               return lista.stream()
+                       .skip((long) pagina  * tamanhoPagina)
+                       .limit(tamanhoPagina)
+                       .toList();
+           }
+
     }
 
     /**
@@ -31,7 +42,16 @@ public class Paginador<T> {
      */
     public List<T> primeirosN(List<T> lista, int n) {
         // TODO: implemente usando limit
-        throw new UnsupportedOperationException("Não implementado");
+        if(lista == null  || lista.isEmpty()){
+            return Collections.emptyList();
+        } else if(n < 0) {
+            throw new UnsupportedOperationException("Não implementado.");
+        }  else {
+            return lista.stream()
+                    .limit(n)
+                    .toList();
+        }
+
     }
 
     /**
@@ -43,7 +63,16 @@ public class Paginador<T> {
      */
     public List<T> ignorarN(List<T> lista, int n) {
         // TODO: implemente usando skip
-        throw new UnsupportedOperationException("Não implementado");
+        if(lista == null  || lista.isEmpty()){
+            return Collections.emptyList();
+        } else if(n < 0) {
+            throw new UnsupportedOperationException("Não implementado");
+        }  else {
+            return lista.stream()
+                    .skip(n)
+                    .toList();
+        }
+
     }
 
     /**
@@ -59,6 +88,20 @@ public class Paginador<T> {
      */
     public int totalPaginas(List<T> lista, int tamanhoPagina) {
         // TODO: implemente
-        throw new UnsupportedOperationException("Não implementado");
+        if(lista == null  || lista.isEmpty()){
+            return 0;
+        } else if(tamanhoPagina <= 0) {
+            throw new UnsupportedOperationException("Não implementado");
+        }  else {
+            int totalElementos = lista.size();
+            int paginas = totalElementos / tamanhoPagina;
+
+            if (totalElementos % tamanhoPagina != 0) {
+                paginas++;
+            }
+
+            return paginas;
+
+        }
     }
 }

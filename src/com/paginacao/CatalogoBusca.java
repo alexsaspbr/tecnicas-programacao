@@ -1,7 +1,8 @@
 package com.paginacao;
 
+import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
+
 
 public class CatalogoBusca {
 
@@ -20,6 +21,17 @@ public class CatalogoBusca {
     public List<Livro> buscarComPaginacao(List<Livro> livros, String termo,
                                           int pagina, int tamanhoPagina) {
         // TODO: implemente usando filter, skip e limit
-        throw new UnsupportedOperationException("Não implementado");
+        if(livros == null  || livros.isEmpty()){
+            return Collections.emptyList();
+        } else if(pagina <  0  ||  tamanhoPagina <= 0) {
+            throw new UnsupportedOperationException("Não implementado.");
+        }  else {
+            return livros.stream()
+                    .filter(livro -> livro.getTitulo().toLowerCase().contains(termo.toLowerCase()))
+                    .skip((long) pagina  * tamanhoPagina) /*casting (long)*/
+                    .limit(tamanhoPagina)
+                    .toList();
+        }
+
     }
 }
