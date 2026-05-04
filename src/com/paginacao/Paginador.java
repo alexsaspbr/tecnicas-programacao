@@ -62,7 +62,8 @@ public class Paginador<T> {
    * @return total de páginas
    */
   public int totalPaginas(List<T> lista, int tamanhoPagina) {
-    // TODO: implemente
-    throw new UnsupportedOperationException("Não implementado");
+    if(lista.isEmpty()) return 0;
+
+    return (int) Math.ceil((double) lista.size() / tamanhoPagina);
   }
 }

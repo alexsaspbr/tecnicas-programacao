@@ -44,5 +44,10 @@ public class TestePaginador {
 
     System.out.println("Esperado: []");
     System.out.println("Obtido:   " + resultadoMaior3);
+
+    // Testando Exercício 4
+    System.out.println("Testando o Exercício 4 - Total Páginas");
+    System.out.println("Esperado: 3");
+    System.out.println("Obtido: " + paginador.totalPaginas(nomes, 2));
   }
 }
