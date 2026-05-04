@@ -19,7 +19,12 @@ public class Paginador<T> {
      */
     public List<T> paginar(List<T> lista, int pagina, int tamanhoPagina) {
         // TODO: implemente usando skip e limit
-        throw new UnsupportedOperationException("Não implementado");
+
+        //1 — Retorna os elementos da página solicitada.
+        return lista.stream()                           // Origem dos dados
+                .skip((long) pagina * tamanhoPagina) // Pula elementos de páginas anteriores
+                .limit(tamanhoPagina)                   // Define o tamanho da janela atual
+                .collect(Collectors.toList());          // Converte o fluxo de volta para Lista
     }
 
     /**
@@ -31,7 +36,11 @@ public class Paginador<T> {
      */
     public List<T> primeirosN(List<T> lista, int n) {
         // TODO: implemente usando limit
-        throw new UnsupportedOperationException("Não implementado");
+
+        //2 — Retorna apenas os primeiros N elementos da lista.
+        return lista.stream()                   // Inicia o fluxo
+                .limit(n)                       // Restringe aos primeiros N itens
+                .collect(Collectors.toList());  // Finaliza a operação
     }
 
     /**
@@ -43,7 +52,11 @@ public class Paginador<T> {
      */
     public List<T> ignorarN(List<T> lista, int n) {
         // TODO: implemente usando skip
-        throw new UnsupportedOperationException("Não implementado");
+
+        //3 — Ignora os primeiros N elementos e retorna o restante.
+        return lista.stream()                   // Inicia o fluxo
+                .skip(n)                        // Descarta os N primeiros itens
+                .collect(Collectors.toList());  // Finaliza a operação
     }
 
     /**
@@ -59,6 +72,13 @@ public class Paginador<T> {
      */
     public int totalPaginas(List<T> lista, int tamanhoPagina) {
         // TODO: implemente
-        throw new UnsupportedOperationException("Não implementado");
+
+        //4 — Calcula o total de páginas necessárias para exibir toda a lista.
+        if (lista == null || lista.isEmpty() || tamanhoPagina <= 0) {
+            return 0;       // Tratamento de casos de borda
+        }
+
+        // Realiza o cálculo matemático com arredondamento para cima
+        return (int) Math.ceil((double) lista.size() / tamanhoPagina);
     }
 }

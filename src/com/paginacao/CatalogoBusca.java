@@ -20,6 +20,12 @@ public class CatalogoBusca {
     public List<Livro> buscarComPaginacao(List<Livro> livros, String termo,
                                           int pagina, int tamanhoPagina) {
         // TODO: implemente usando filter, skip e limit
-        throw new UnsupportedOperationException("Não implementado");
+
+        // 5 — Busca livros pelo título e retorna a página solicitada do resultado.
+        return livros.stream()        // Inicia o processamento
+                .filter(livro -> livro.getTitulo().toLowerCase().contains(termo.toLowerCase())) // Filtra ignorando maiúsculas/minúsculas
+                .skip((long) pagina * tamanhoPagina)  //  Pula os resultados das páginas anteriores
+                .limit(tamanhoPagina)                   // Limita a quantidade de livros na página atual
+                .collect(Collectors.toList());          // Converte o resultado final em uma Lista
     }
 }
