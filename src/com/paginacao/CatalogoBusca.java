@@ -1,5 +1,6 @@
 package com.paginacao;
 
+import java.sql.ClientInfoStatus;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -17,9 +18,14 @@ public class CatalogoBusca {
      * @param tamanhoPagina quantidade máxima de resultados por página
      * @return lista paginada dos livros cujo título contém o termo
      */
+
     public List<Livro> buscarComPaginacao(List<Livro> livros, String termo,
                                           int pagina, int tamanhoPagina) {
         // TODO: implemente usando filter, skip e limit
-        throw new UnsupportedOperationException("Não implementado");
+        return livros.stream()
+                .filter(a->a.getTitulo().toLowerCase().contains(termo.toLowerCase()))
+                .skip(pagina*tamanhoPagina)
+                .limit(tamanhoPagina)
+                .toList();
     }
 }
