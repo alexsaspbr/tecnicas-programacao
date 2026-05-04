@@ -18,16 +18,10 @@ public class Paginador<T> {
                 .collect(Collectors.toList());
     }
 
-    /**
-     * Exercício 3 — Ignora os primeiros N elementos e retorna o restante.
-     *
-     * @param lista lista completa de elementos
-     * @param n     quantidade de elementos a ignorar
-     * @return lista sem os primeiros n elementos
-     */
     public List<T> ignorarN(List<T> lista, int n) {
-        // TODO: implemente usando skip
-        throw new UnsupportedOperationException("Não implementado");
+        return lista.stream()
+                .skip(n)
+                .collect(Collectors.toList());
     }
 
     /**
