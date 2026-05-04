@@ -19,7 +19,16 @@ public class CatalogoBusca {
      */
     public List<Livro> buscarComPaginacao(List<Livro> livros, String termo,
                                           int pagina, int tamanhoPagina) {
-        // TODO: implemente usando filter, skip e limit
-        throw new UnsupportedOperationException("Não implementado");
+
+
+
+        String termoLowe = termo.toLowerCase();
+
+        return livros.stream()
+                .filter(livro -> livro.getTitulo() != null &&
+                        livro.getTitulo().toLowerCase().contains(termoLowe))
+                .skip((long) pagina * tamanhoPagina)
+                .limit(tamanhoPagina)
+                .collect(Collectors.toList());
     }
 }
