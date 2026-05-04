@@ -12,16 +12,10 @@ public class Paginador<T> {
                 .collect(Collectors.toList());
     }
 
-    /**
-     * Exercício 2 — Retorna apenas os primeiros N elementos da lista.
-     *
-     * @param lista lista completa de elementos
-     * @param n     quantidade de elementos a retornar
-     * @return lista com no máximo n elementos
-     */
     public List<T> primeirosN(List<T> lista, int n) {
-        // TODO: implemente usando limit
-        throw new UnsupportedOperationException("Não implementado");
+        return lista.stream()
+                .limit(n)
+                .collect(Collectors.toList());
     }
 
     /**
