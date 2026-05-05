@@ -8,18 +8,21 @@ public class CatalogoBusca {
     /**
      * Exercício 5 — Busca livros pelo título e retorna a página solicitada do resultado.
      *
-     * A busca deve ser case-insensitive.
-     * A paginação deve ocorrer APÓS o filtro (sobre os resultados filtrados).
+     * Pipeline:
+     *   1. filter  → mantém apenas livros cujo título contém o termo (case-insensitive)
+     *   2. skip    → descarta as páginas anteriores à solicitada
+     *   3. limit   → pega no máximo tamanhoPagina resultados
      *
-     * @param livros        lista completa de livros
-     * @param termo         texto a buscar no título (case-insensitive)
-     * @param pagina        número da página (começa em 0)
-     * @param tamanhoPagina quantidade máxima de resultados por página
-     * @return lista paginada dos livros cujo título contém o termo
+     * A conversão para lowercase em ambos os lados garante busca case-insensitive
      */
     public List<Livro> buscarComPaginacao(List<Livro> livros, String termo,
                                           int pagina, int tamanhoPagina) {
-        // TODO: implemente usando filter, skip e limit
-        throw new UnsupportedOperationException("Não implementado");
+        String termoLower = termo.toLowerCase();
+
+        return livros.stream()
+                .filter(livro -> livro.getTitulo().toLowerCase().contains(termoLower))
+                .skip((long) pagina * tamanhoPagina)
+                .limit(tamanhoPagina)
+                .collect(Collectors.toList());
     }
 }
