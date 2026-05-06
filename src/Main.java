@@ -3,8 +3,8 @@ import com.animal.Animal;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class Main {
     public static void main(String[] args) {
@@ -15,7 +15,7 @@ public class Main {
         animais.add(new Animal("Sapo", true, true, 0.1));
         animais.add(new Animal("Cobra", false, true, 5.0));
 
-        long count = animais.stream()                      //fonte
+        Map<Boolean, List<Animal>> grouped = animais.stream()                      //fonte
                 .filter(Animal::podeSalta) //intermediaria
                 //.peek(System.out::println) //intermediaria
                 .sorted(Comparator.comparing(Animal::getNome).thenComparing(Animal::getPeso))
@@ -29,15 +29,16 @@ public class Main {
                  })*/ //intermediaria*/
                 //.forEach                .sorted(Comparator.comparing(Animal::getNome). thenComparing(Animal::getPeso))(System.out::println);//terminal
                 //.forEach(System.out::println);
-                //.collect(Collectors.toList());
-                .count();
-        System.out.printf("Quantidade de animais %d", count);
-
-       /* Stream<String> stringStream = animais.stream()                      //fonte
+                .collect(Collectors.groupingBy(Animal::podeSalta));
+        //.count();
+        //System.out.printf("Quantidade de animais %d", count);
+        System.out.println(animais.stream()                      //fonte
                 .filter(Animal::podeSalta) //intermediaria
-                .map(Animal::getNome) //intermediaria
-                .map(s -> s.toUpperCase());//intermediaria*/
-
+                .map(Animal::getNome)
+                //.map(nome -> nome.concat(";"))//intermediaria
+                //.forEach(System.out::print);
+                .collect(Collectors.joining(";", "ANTES ", " DEPOIS ")));
+        //System.out.println(nomesAnimais);
 
         //TODO Trazer exemplo de paralel stream
 
