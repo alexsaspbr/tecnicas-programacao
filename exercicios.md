@@ -39,9 +39,16 @@ public class Ex1FiltrarContar {
             new Produto("Tablet",   850.00)
         );
 
-        // a) TODO: usar stream().filter().forEach() para imprimir os produtos acima de R$ 100
+        // a) Filtrar apenas os produtos com preço acima de R$ 100,00 e imprimir cada um.
+        produtos.stream()
+            .filter(p -> p.getPreco() > 100)
+            .forEach(System.out::println);
 
-        // b) TODO: usar stream().filter().count() para contar e imprimir o total
+        // b) Contar quantos produtos custam mais de R$ 100,00 e imprimir o resultado.
+        long count = produtos.stream()
+            .filter(p -> p.getPreco() > 100)
+            .count();
+        System.out.println("Total acima de R$ 100: " + count);
     }
 }
 ```
@@ -73,8 +80,11 @@ public class Ex2MapSorted {
             new Produto("Tablet",   850.00)
         );
 
-        // TODO: usar stream().map().sorted().collect() para obter a lista de nomes ordenada
-        List<String> nomes = null; // substituir pelo pipeline
+        // Extrair apenas os nomes dos produtos, ordene-os em ordem alfabética e colete o resultado
+        List<String> nomes = produtos.stream()
+            .map(Produto::getNome)
+            .sorted()
+            .collect(Collectors.toList());
 
         System.out.println(nomes);
     }
@@ -111,11 +121,16 @@ public class Ex3Estatisticas {
             new Produto("Tablet",   850.00)
         );
 
-        // a) TODO: usar stream().mapToDouble().average() para calcular a média
-        //    Imprimir no formato: "Média de preços: R$ XX.XX"
+        // a) Calcular a média de preços de todos os produtos.
+        produtos.stream()
+            .mapToDouble(Produto::getPreco)
+            .average()
+            .ifPresent(avg -> System.out.printf("Média de preços: R$ %.2f%n", avg));
 
-        // b) TODO: usar stream().min(Comparator) para encontrar o mais barato
-        //    Imprimir no formato: "Mais barato: NomeProduto (R$ XX.XX)"
+        // b) Encontrar o produto mais barato.
+        produtos.stream()
+            .min(Comparator.comparingDouble(Produto::getPreco))
+            .ifPresent(p -> System.out.println("Mais barato: " + p));
     }
 }
 ```
@@ -155,8 +170,9 @@ public class Ex4Agrupamento {
             new Produto("Tablet",   850.00)
         );
 
-        // TODO: usar stream().collect(Collectors.partitioningBy(...)) para agrupar
-        Map<Boolean, List<Produto>> grupos = null; // substituir pelo pipeline
+        // Agrupar os produtos em duas categorias: baratos (≤ R$ 50,00) e caros (> R$ 50,00)
+        Map<Boolean, List<Produto>> grupos = produtos.stream()
+            .collect(Collectors.partitioningBy(p -> p.getPreco() <= 50));
 
         System.out.println("Baratos (≤ R$ 50): " + grupos.get(true));
         System.out.println("Caros   (> R$ 50): " + grupos.get(false));
