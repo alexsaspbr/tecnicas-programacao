@@ -1,180 +1,213 @@
-# Exercícios — I/O e NIO.2 em Java
+# Exercícios — I/O Streams em Java
 
 ---
 
-### Exercício 1 — Navegando um Path
+### Exercício 1 — Copiando Arquivos com Bytes
 
-Dado o caminho `/projetos/ada/backend/src/Main.java`, use a interface `Path` para responder:
+Implemente o método `copiar(File origem, File destino)` que copia um arquivo binário byte a byte usando `FileInputStream` e `FileOutputStream`.
 
-a) Qual o número de segmentos do caminho?
-b) Qual o segmento de índice 2?
-c) Qual o nome do arquivo (segmento final)?
-d) Qual o diretório pai?
-e) Qual o resultado de `subpath(1, 4)`?
+Em seguida, refatore-o em `copiarComBuffer(File origem, File destino)`, usando um buffer de 1024 bytes para melhorar a performance. Compare as duas versões.
+
+No `main`, crie um arquivo temporário com conteúdo, chame os dois métodos e verifique que os arquivos destino são iguais ao original.
 
 ```java
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.io.*;
 
-public class Ex1Path {
+public class Ex1CopiaBytes {
 
-    public static void main(String[] args) {
-        Path path = Paths.get("/projetos/ada/backend/src/Main.java");
+    public static void main(String[] args) throws IOException {
+        File origem = File.createTempFile("origem", ".bin");
+        origem.deleteOnExit();
 
-        // a) TODO: imprimir o número de segmentos
-        // b) TODO: imprimir o segmento de índice 2
-        // c) TODO: imprimir o nome do arquivo (getFileName)
-        // d) TODO: imprimir o diretório pai
-        // e) TODO: imprimir subpath(1, 4)
+        // escreve alguns bytes no arquivo de origem
+        try (var out = new FileOutputStream(origem)) {
+            out.write(new byte[]{72, 101, 108, 108, 111}); // "Hello"
+        }
+
+        File destino1 = File.createTempFile("destino1", ".bin");
+        File destino2 = File.createTempFile("destino2", ".bin");
+        destino1.deleteOnExit();
+        destino2.deleteOnExit();
+
+        // TODO: chamar copiar(origem, destino1)
+        // TODO: chamar copiarComBuffer(origem, destino2)
+
+        // verificar que os conteúdos são iguais
+        System.out.println("Byte a byte igual: "    + conteudoIgual(origem, destino1));
+        System.out.println("Com buffer igual: "     + conteudoIgual(origem, destino2));
+    }
+
+    static void copiar(File origem, File destino) throws IOException {
+        // TODO: implementar com FileInputStream e FileOutputStream, lendo byte a byte
+    }
+
+    static void copiarComBuffer(File origem, File destino) throws IOException {
+        // TODO: implementar com buffer de byte[1024] e flush()
+    }
+
+    static boolean conteudoIgual(File a, File b) throws IOException {
+        return java.util.Arrays.equals(
+            new FileInputStream(a).readAllBytes(),
+            new FileInputStream(b).readAllBytes()
+        );
     }
 }
 ```
 
 **Saída esperada:**
 ```
-Segmentos: 5
-Índice 2: backend
-Arquivo: Main.java
-Pai: /projetos/ada/backend/src
-subpath(1,4): ada/backend/src
+Byte a byte igual: true
+Com buffer igual: true
 ```
 
 ---
 
-### Exercício 2 — Normalize e Resolve
+### Exercício 2 — Lendo e Escrevendo Texto
 
-a) Use `normalize()` para simplificar cada path abaixo e imprima o resultado:
+Dado o arquivo `notas.txt` com as linhas abaixo, implemente dois métodos:
 
-```java
-Path p1 = Path.of("/projetos/ada/../backend/./src");
-Path p2 = Path.of("./config/../resources/app.properties");
-Path p3 = Path.of("../../logs/app.log");
-```
+a) `escrever(File arquivo, List<String> linhas)` — grava cada linha com `BufferedWriter`, acrescentando o número de linha no início (`"1. Ana — 9.5"`).
 
-b) Use `resolve()` para montar o caminho completo de um arquivo a partir de uma base e um subpath:
+b) `lerFormatado(File arquivo)` — lê o arquivo com `BufferedReader` e imprime cada linha. Em seguida, refaça a leitura com `PrintWriter` na escrita, substituindo `BufferedWriter`.
 
 ```java
-Path base = Path.of("/home/usuario");
-Path sub  = Path.of("documentos/relatorio.txt");
-// TODO: imprimir base.resolve(sub)
+import java.io.*;
+import java.util.List;
+
+public class Ex2Texto {
+
+    public static void main(String[] args) throws IOException {
+        File arquivo = File.createTempFile("notas", ".txt");
+        arquivo.deleteOnExit();
+
+        List<String> alunos = List.of(
+            "Ana — 9.5",
+            "Bruno — 7.0",
+            "Carla — 8.5",
+            "Diego — 6.0"
+        );
+
+        // a) TODO: chamar escrever passando arquivo e alunos
+        // b) TODO: chamar lerFormatado passando arquivo
+    }
+
+    static void escrever(File arquivo, List<String> linhas) throws IOException {
+        // TODO: usar BufferedWriter; numerar cada linha ("1. Ana — 9.5", etc.)
+    }
+
+    static void lerFormatado(File arquivo) throws IOException {
+        // TODO: usar BufferedReader e imprimir cada linha lida
+    }
+}
 ```
 
-c) Use `relativize()` para calcular o caminho relativo entre os dois paths abaixo:
-
-```java
-Path origem  = Path.of("/projetos/ada");
-Path destino = Path.of("/projetos/ada/backend/src/Main.java");
-// TODO: imprimir origem.relativize(destino)
+**Saída esperada:**
 ```
-
-**Saída esperada (parte a):**
-```
-/projetos/backend/src
-config/resources/app.properties
-../../logs/app.log
+1. Ana — 9.5
+2. Bruno — 7.0
+3. Carla — 8.5
+4. Diego — 6.0
 ```
 
 ---
 
-### Exercício 3 — Leitura e Escrita de Arquivo
+### Exercício 3 — `Files.lines()` com Pipeline de Streams
 
-Implemente os dois métodos abaixo:
+Dado um arquivo `alunos.txt` com uma linha por aluno no formato `"Nome,nota"` (ex.: `"Ana,9.5"`), use `Files.lines()` para:
 
-- `escreverLinhas(Path destino, List<String> linhas)`: escreve cada linha da lista em um arquivo, uma por linha, usando `BufferedWriter`.
-- `lerLinhas(Path origem)`: lê todas as linhas do arquivo e retorna uma `List<String>`, usando `Files.readAllLines()`.
-
-Em seguida, no `main`, escreva o arquivo, leia-o de volta e imprima cada linha com seu número.
+a) Filtrar apenas os alunos com nota **maior ou igual a 7.0**.  
+b) Ordenar os aprovados por nota **decrescente**.  
+c) Imprimir cada aprovado no formato `"Ana: 9.5"`.
 
 ```java
 import java.io.*;
 import java.nio.file.*;
 import java.util.List;
 
-public class Ex3Arquivo {
+public class Ex3FilesLines {
 
     public static void main(String[] args) throws IOException {
-        Path arquivo = Path.of("turma.txt");
+        Path arquivo = Files.createTempFile("alunos", ".txt");
+        arquivo.toFile().deleteOnExit();
 
-        List<String> alunos = List.of("Ana", "Bruno", "Carla", "Diego", "Elisa");
+        // Grava dados de exemplo
+        Files.writeString(arquivo,
+            "Ana,9.5\nBruno,5.0\nCarla,8.5\nDiego,6.0\nElisa,7.0\n");
 
-        // TODO: chamar escreverLinhas passando arquivo e alunos
-        // TODO: chamar lerLinhas e imprimir cada linha numerada (1. Ana, 2. Bruno, ...)
-    }
-
-    static void escreverLinhas(Path destino, List<String> linhas) throws IOException {
-        // TODO: usar BufferedWriter + FileWriter para escrever cada linha
-    }
-
-    static List<String> lerLinhas(Path origem) throws IOException {
-        // TODO: usar Files.readAllLines para retornar as linhas
-        return null;
+        // TODO: usar Files.lines() para abrir o arquivo
+        // TODO: filtrar nota >= 7.0 (parsear cada linha por vírgula)
+        // TODO: ordenar por nota decrescente
+        // TODO: imprimir no formato "Nome: nota"
     }
 }
 ```
 
 **Saída esperada:**
 ```
-1. Ana
-2. Bruno
-3. Carla
-4. Diego
-5. Elisa
+Ana: 9.5
+Carla: 8.5
+Elisa: 7.0
 ```
+
+> Dica: `Double.parseDouble(partes[1])` converte a nota; `Comparator.comparingDouble(...).reversed()` ordena de forma decrescente.
 
 ---
 
-### Exercício 4 — Serialização de Objetos
+### Exercício 4 — Serialização Completa
 
-a) Faça a classe `Produto` ser serializável. O campo `desconto` deve ser marcado como `transient` (não serializado).
+a) Faça a classe `Aluno` implementar `Serializable`. O campo `senha` deve ser `transient`.
 
-b) Implemente `salvar(List<Produto> produtos, File arquivo)` usando `ObjectOutputStream`.
+b) Implemente `salvar(List<Aluno> alunos, File arquivo)` com `ObjectOutputStream` encadeado em `BufferedOutputStream`.
 
-c) Implemente `carregar(File arquivo)` usando `ObjectInputStream`, retornando `List<Produto>`.
+c) Implemente `carregar(File arquivo)` com `ObjectInputStream` encadeado em `BufferedInputStream`, tratando `EOFException` para encerrar o loop.
 
-d) No `main`, salve a lista em um arquivo temporário, carregue-a de volta e verifique que `desconto` é `0.0` (valor padrão após desserialização).
+d) No `main`, salve a lista, carregue de volta e confirme que:
+- Os campos `nome` e `nota` foram preservados.
+- O campo `senha` é `null` após desserializar.
 
 ```java
 import java.io.*;
 import java.util.*;
 
-// a) TODO: implementar Serializable e marcar desconto como transient
-public class Produto {
+// a) TODO: implementar Serializable; marcar senha como transient
+public class Aluno {
     private static final long serialVersionUID = 1L;
     private String nome;
-    private double preco;
-    private double desconto; // não deve ser serializado
+    private double nota;
+    private String senha;
 
-    public Produto(String nome, double preco, double desconto) {
-        this.nome     = nome;
-        this.preco    = preco;
-        this.desconto = desconto;
+    public Aluno(String nome, double nota, String senha) {
+        this.nome  = nome;
+        this.nota  = nota;
+        this.senha = senha;
     }
+
     public String toString() {
-        return nome + " R$" + preco + " desconto=" + desconto;
+        return nome + " (nota=" + nota + ", senha=" + senha + ")";
     }
 }
 
 public class Ex4Serializacao {
 
     public static void main(String[] args) throws IOException, ClassNotFoundException {
-        List<Produto> originais = List.of(
-            new Produto("Notebook", 3200.00, 0.10),
-            new Produto("Mouse",      89.90, 0.05),
-            new Produto("Teclado",   149.00, 0.15)
+        List<Aluno> originais = List.of(
+            new Aluno("Ana",   9.5, "s3cr3t"),
+            new Aluno("Bruno", 7.0, "abc123"),
+            new Aluno("Carla", 8.5, "xyz789")
         );
 
-        File arquivo = File.createTempFile("produtos", ".ser");
+        File arquivo = File.createTempFile("alunos", ".ser");
         arquivo.deleteOnExit();
 
-        // TODO: chamar salvar
-        // TODO: chamar carregar e imprimir cada produto (desconto deve ser 0.0)
+        // TODO: salvar a lista
+        // TODO: carregar e imprimir cada aluno (senha deve ser null)
     }
 
-    // b) TODO: implementar salvar com ObjectOutputStream
-    static void salvar(List<Produto> produtos, File arquivo) throws IOException { }
+    // b) TODO: implementar com ObjectOutputStream + BufferedOutputStream
+    static void salvar(List<Aluno> alunos, File arquivo) throws IOException { }
 
-    // c) TODO: implementar carregar com ObjectInputStream
-    static List<Produto> carregar(File arquivo) throws IOException, ClassNotFoundException {
+    // c) TODO: implementar com ObjectInputStream + BufferedInputStream + EOFException
+    static List<Aluno> carregar(File arquivo) throws IOException, ClassNotFoundException {
         return null;
     }
 }
@@ -182,7 +215,7 @@ public class Ex4Serializacao {
 
 **Saída esperada:**
 ```
-Notebook R$3200.0 desconto=0.0
-Mouse R$89.9 desconto=0.0
-Teclado R$149.0 desconto=0.0
+Ana (nota=9.5, senha=null)
+Bruno (nota=7.0, senha=null)
+Carla (nota=8.5, senha=null)
 ```
