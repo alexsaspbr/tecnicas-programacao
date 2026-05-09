@@ -50,8 +50,17 @@ public class ArquivoMotor {
      *   Dica: use try-with-resources para fechar os streams automaticamente
      */
     public void salvar(String entidade, Long id, Object obj) throws IOException {
-        // TODO Exercício 5a
-        throw new UnsupportedOperationException("Não implementado — veja TODO Exercício 5a");
+        Path dirEntidade = diretorioBase.resolve(entidade);
+
+        Files.createDirectories(dirEntidade);
+
+        Path caminhoArquivo = resolverCaminho(entidade, id);
+
+        try(OutputStream os = Files.newOutputStream(caminhoArquivo);
+        ObjectOutputStream oos = new ObjectOutputStream(os)) {
+
+            oos.writeObject(obj);
+        }
     }
 
     // -------------------------------------------------------------------------
@@ -72,8 +81,17 @@ public class ArquivoMotor {
      */
     @SuppressWarnings("unchecked")
     public <T> Optional<T> carregar(String entidade, Long id) throws IOException, ClassNotFoundException {
-        // TODO Exercício 5b
-        throw new UnsupportedOperationException("Não implementado — veja TODO Exercício 5b");
+        Path caminho = resolverCaminho(entidade, id);
+
+        if (Files.notExists(caminho)) {
+            return Optional.empty();
+        }
+
+        try (InputStream is = Files.newInputStream(caminho);
+        ObjectInputStream ois = new ObjectInputStream(is)) {
+            T resultado = (T) ois.readObject();
+            return Optional.of(resultado);
+        }
     }
 
     // -------------------------------------------------------------------------
