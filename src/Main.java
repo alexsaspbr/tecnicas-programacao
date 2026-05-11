@@ -1,4 +1,5 @@
 import java.io.*;
+import java.util.stream.Stream;
 
 public class Main {
 
@@ -13,6 +14,16 @@ public class Main {
 
         System.out.println(arrayAlunoNota[0]);
         System.out.println(Double.parseDouble(arrayAlunoNota[1]));
+
+
+        Stream<String> alunoNota1 = Stream.of(alunoNota);
+        alunoNota1
+                .filter(a -> {
+                    String[] arrayA = a.split(",");
+                    return Double.parseDouble(arrayA[1]) >= 7.0;
+                })
+                .sorted(null)
+                .forEach(System.out::println);
 
         try {
             copy();
