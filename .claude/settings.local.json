@@ -1,0 +1,33 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git -C /home/alexaraujo/ada/tecnicas-programacao/tecnicas-programacao log --oneline --all)",
+      "Bash(git *)",
+      "Bash(javac -d out --source-path src src/simplodb/*.java src/biblioteca/modelo/*.java src/biblioteca/repositorio/*.java src/biblioteca/servico/*.java src/Main.java)",
+      "Bash(java -cp out Main)",
+      "Bash(pandoc --version)",
+      "Bash(npm list *)",
+      "Bash(marp --version)",
+      "Bash(marp --help)",
+      "Bash(firefox --version)",
+      "Bash(python3 -c \"import json,sys; p=json.load\\(sys.stdin\\); print\\(p['version'], p.get\\('main',''\\)\\)\")",
+      "Bash(npm install *)",
+      "Bash(node *)",
+      "Bash(npm init *)",
+      "Bash(grep -E \"^mermaid\\\\.\\(min\\\\.\\)?js$\")",
+      "Bash(firefox --headless --print-to-pdf=/tmp/test-ff.pdf /tmp/readme_final.html)",
+      "Read(//tmp/**)",
+      "Bash(xxd projeto-final-biblioteca-digital.pdf)",
+      "Bash(pdftotext projeto-final-biblioteca-digital.pdf -)",
+      "Bash(python3 -c \"import weasyprint; print\\('weasyprint ok'\\)\")",
+      "Bash(pip install *)",
+      "Bash(python3 -c \"import weasyprint\")",
+      "Bash(python3 -m pip install weasyprint)",
+      "Bash(pacman -Qs chromium)",
+      "Read(//usr/bin/**)",
+      "Read(//opt/**)",
+      "Bash(npx puppeteer *)",
+      "Bash(python3 *)"
+    ]
+  }
+}
