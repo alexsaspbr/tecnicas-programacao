@@ -1,162 +1,227 @@
-# Exercícios — Programação Funcional em Java
+# Exercícios — Interfaces Funcionais e Optional
 
 ---
 
-### Exercício 1 — Filtrando com Predicate
+### Exercício 1 — Supplier, Consumer e BiConsumer
 
-Dada a classe `Produto` e a lista abaixo, implemente o método `filtrar()` usando `Predicate<Produto>` e chame-o com um lambda que selecione apenas os produtos com preço acima de R$ 50,00.
+Usando a classe `Produto` abaixo, implemente os três itens com lambdas:
+
+a) Um `Supplier<Produto>` que retorne sempre um novo `Produto("Indefinido", 0.0)`.
+
+b) Um `Consumer<Produto>` que imprima o produto no formato `"Produto: Notebook | Preço: R$ 3200,00"`.
+
+c) Um `BiConsumer<String, Double>` que receba nome e preço, crie um `Produto` e imprima usando o mesmo `Consumer` do item (b).
 
 ```java
-import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Predicate;
+import java.util.function.*;
 
 public class Produto {
     private String nome;
     private double preco;
 
     public Produto(String nome, double preco) {
-        this.nome = nome;
+        this.nome  = nome;
         this.preco = preco;
     }
-
     public String getNome()  { return nome; }
     public double getPreco() { return preco; }
-    public String toString() { return nome + " (R$ " + preco + ")"; }
 }
 
-public class Ex1Predicate {
+public class Ex1SupplierConsumer {
 
     public static void main(String[] args) {
-        List<Produto> produtos = new ArrayList<>();
-        produtos.add(new Produto("Caneta",   3.50));
-        produtos.add(new Produto("Mochila",  120.00));
-        produtos.add(new Produto("Caderno",  45.00));
-        produtos.add(new Produto("Notebook", 3200.00));
-        produtos.add(new Produto("Régua",    8.00));
 
-        // TODO: chamar filtrar() com um lambda que filtre produtos acima de R$ 50,00
-    }
+        // a) TODO: Supplier<Produto> que retorna new Produto("Indefinido", 0.0)
+        Supplier<Produto> fabrica = null;
+        System.out.println(fabrica.get().getNome()); // Indefinido
 
-    private static void filtrar(List<Produto> lista, Predicate<Produto> criterio) {
-        // TODO: percorrer a lista e imprimir os produtos onde criterio.test() retornar true
+        // b) TODO: Consumer<Produto> que imprime no formato acima
+        Consumer<Produto> exibir = null;
+        exibir.accept(new Produto("Notebook", 3200.00));
+        exibir.accept(new Produto("Mouse",      89.90));
+
+        // c) TODO: BiConsumer<String, Double> que cria Produto e usa o Consumer acima
+        BiConsumer<String, Double> cadastrar = null;
+        cadastrar.accept("Teclado", 149.00);
     }
 }
 ```
 
 **Saída esperada:**
 ```
-Mochila (R$ 120.0)
-Notebook (R$ 3200.0)
+Indefinido
+Produto: Notebook | Preço: R$ 3200,00
+Produto: Mouse | Preço: R$ 89,90
+Produto: Teclado | Preço: R$ 149,00
 ```
+
+> Dica: `String.format("Produto: %s | Preço: R$ %.2f", ...)` formata o valor com vírgula no locale brasileiro.
 
 ---
 
-### Exercício 2 — Consumindo com Consumer
+### Exercício 2 — Predicate, BiPredicate e Composição
 
-Usando a mesma classe `Produto` e lista do exercício anterior, crie um `Consumer<Produto>` com lambda que imprima cada produto no formato abaixo, e aplique-o com `forEach`.
+Usando a lista de palavras abaixo, implemente com lambdas:
 
-```java
-import java.util.function.Consumer;
+a) Um `Predicate<String>` que retorne `true` se a string tiver mais de 5 caracteres.
 
-public class Ex2Consumer {
+b) Um `Predicate<String>` que retorne `true` se a string começar com letra maiúscula.
 
-    public static void main(String[] args) {
-        List<Produto> produtos = new ArrayList<>();
-        produtos.add(new Produto("Caneta",   3.50));
-        produtos.add(new Produto("Mochila",  120.00));
-        produtos.add(new Produto("Caderno",  45.00));
-        produtos.add(new Produto("Notebook", 3200.00));
-        produtos.add(new Produto("Régua",    8.00));
+c) Componha os dois predicados com `and()` e filtre a lista, imprimindo apenas as palavras que atendem **ambos** os critérios.
 
-        // TODO: criar um Consumer<Produto> com lambda que imprima no formato abaixo
-        // TODO: usar produtos.forEach() passando o consumer
-    }
-}
-```
+d) Componha com `or()` e imprima as palavras que atendem **ao menos um** critério.
 
-**Formato de saída esperado:**
-```
-Produto: Caneta | Preço: R$ 3,50
-Produto: Mochila | Preço: R$ 120,00
-...
-```
-
-> Dica: `String.format("Produto: %s | Preço: R$ %.2f", ...)` pode ajudar.
-
----
-
-### Exercício 3 — Ordenando com Comparator
-
-Crie dois `Comparator<Produto>` com lambdas para ordenar a lista de produtos:
-1. Por preço crescente
-2. Por nome em ordem alfabética
-
-Para cada ordenação, imprima a lista resultante.
+e) Um `BiPredicate<String, Integer>` que retorne `true` se a string tiver exatamente `n` caracteres. Teste com `("Java", 4)` e `("Python", 3)`.
 
 ```java
-import java.util.Comparator;
-
-public class Ex3Comparator {
-
-    public static void main(String[] args) {
-        List<Produto> produtos = new ArrayList<>();
-        produtos.add(new Produto("Caneta",   3.50));
-        produtos.add(new Produto("Mochila",  120.00));
-        produtos.add(new Produto("Caderno",  45.00));
-        produtos.add(new Produto("Notebook", 3200.00));
-        produtos.add(new Produto("Régua",    8.00));
-
-        // TODO: criar Comparator por preço crescente e ordenar a lista
-        // TODO: imprimir a lista ordenada por preço
-
-        // TODO: criar Comparator por nome alfabético e ordenar a lista
-        // TODO: imprimir a lista ordenada por nome
-    }
-}
-```
-
-> Dica: use `Double.compare(a, b)` para comparar `double` com segurança.
-
----
-
-### Exercício 4 — removeIf e Supplier
-
-Dada a lista de números abaixo:
-
-a) Use `removeIf` com lambda para remover todos os números ímpares da lista.
-
-b) Crie um `Supplier<List<Integer>>` que forneça uma nova lista contendo apenas os números pares de 1 a 10, sem usar `removeIf`.
-
-c) Imprima as duas listas e verifique se são iguais.
-
-```java
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.function.Supplier;
+import java.util.function.*;
 
-public class Ex4RemoveIfSupplier {
+public class Ex2Predicate {
 
     public static void main(String[] args) {
-        List<Integer> numeros = new ArrayList<>(
-            Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
-        );
+        List<String> palavras = List.of("Ada", "Java", "Kotlin", "Python", "Go", "Clojure");
 
-        // a) TODO: usar removeIf com lambda para remover os ímpares
-        System.out.println("removeIf: " + numeros);
+        // a) TODO: Predicate — mais de 5 caracteres
+        Predicate<String> maisDe5 = null;
 
-        // b) TODO: criar Supplier<List<Integer>> que retorne lista só com pares de 1 a 10
-        Supplier<List<Integer>> pares = null; // substituir pelo lambda
+        // b) TODO: Predicate — começa com maiúscula
+        Predicate<String> comecaMaiusculo = null;
 
-        // c) TODO: chamar pares.get(), imprimir e comparar com numeros usando .equals()
+        // c) TODO: and() — ambos; imprimir com rótulo "AND:"
+        // d) TODO: or()  — ao menos um; imprimir com rótulo "OR:"
+
+        // e) TODO: BiPredicate — string com exatamente n caracteres
+        BiPredicate<String, Integer> tamanhoExato = null;
+        System.out.println(tamanhoExato.test("Java",   4)); // true
+        System.out.println(tamanhoExato.test("Python", 3)); // false
     }
 }
 ```
 
 **Saída esperada:**
 ```
-removeIf: [2, 4, 6, 8, 10]
-Supplier: [2, 4, 6, 8, 10]
-Iguais: true
+AND: [Kotlin, Python, Clojure]
+OR:  [Ada, Java, Kotlin, Python, Clojure]
+true
+false
+```
+
+---
+
+### Exercício 3 — Function, BiFunction e Operadores
+
+Implemente as transformações abaixo com lambdas e method references:
+
+a) `Function<String, Integer>` que retorna o número de caracteres da string.
+
+b) `Function<String, String>` que remove espaços nas extremidades e converte para minúsculas.
+
+c) Componha (a) e (b) com `andThen` para: dado `"  Java  "`, primeiro normalizar e depois contar.
+
+d) `BiFunction<String, Integer, String>` que repete a string `n` vezes separada por `" | "`.
+   Ex.: `("Ada", 3)` → `"Ada | Ada | Ada"`.
+
+e) `UnaryOperator<List<Integer>>` que recebe uma lista e retorna uma nova lista com cada elemento ao quadrado.
+
+f) `BinaryOperator<Integer>` que retorna o maior entre dois inteiros.
+
+```java
+import java.util.List;
+import java.util.function.*;
+import java.util.stream.Collectors;
+
+public class Ex3Function {
+
+    public static void main(String[] args) {
+
+        // a) TODO: Function String → Integer (length)
+        Function<String, Integer> tamanho = null;
+        System.out.println(tamanho.apply("Kotlin")); // 6
+
+        // b) TODO: Function String → String (trim + toLowerCase)
+        Function<String, String> normalizar = null;
+        System.out.println(normalizar.apply("  JAVA  ")); // java
+
+        // c) TODO: andThen — normalizar e depois contar
+        Function<String, Integer> normalEContar = null;
+        System.out.println(normalEContar.apply("  Java  ")); // 4
+
+        // d) TODO: BiFunction String, Integer → String (repetição com " | ")
+        BiFunction<String, Integer, String> repetir = null;
+        System.out.println(repetir.apply("Ada", 3)); // Ada | Ada | Ada
+
+        // e) TODO: UnaryOperator List<Integer> → List<Integer> (quadrado)
+        UnaryOperator<List<Integer>> quadrados = null;
+        System.out.println(quadrados.apply(List.of(1, 2, 3, 4))); // [1, 4, 9, 16]
+
+        // f) TODO: BinaryOperator Integer — retorna o maior
+        BinaryOperator<Integer> maior = null;
+        System.out.println(maior.apply(7, 42)); // 42
+    }
+}
+```
+
+---
+
+### Exercício 4 — Optional
+
+Dado o método `buscarPreco` abaixo, que retorna `Optional.empty()` quando o produto não é encontrado:
+
+a) Chame `buscarPreco("Notebook")` e imprima o preço usando `ifPresent`.
+
+b) Chame `buscarPreco("Tablet")` (inexistente) e use `orElse` para retornar `0.0`.
+
+c) Chame `buscarPreco("Tablet")` e use `orElseGet` com um `Supplier` que retorna `Double.NaN`.
+
+d) Chame `buscarPreco("Tablet")` e use `orElseThrow` com um `Supplier` que lança `IllegalArgumentException("Produto não encontrado")`. Capture a exceção e imprima a mensagem.
+
+e) Escreva o método `descrever(Optional<Double> opt)` que:
+   - Se presente, retorna `"Preço: R$ <valor>"`.
+   - Se ausente, retorna `"Preço indisponível"`.
+   Implemente **sem** usar `get()` diretamente.
+
+```java
+import java.util.Map;
+import java.util.Optional;
+
+public class Ex4Optional {
+
+    private static final Map<String, Double> CATALOGO = Map.of(
+        "Notebook", 3200.00,
+        "Mouse",      89.90,
+        "Teclado",   149.00
+    );
+
+    public static Optional<Double> buscarPreco(String nome) {
+        return Optional.ofNullable(CATALOGO.get(nome));
+    }
+
+    public static void main(String[] args) {
+
+        // a) TODO: ifPresent — imprimir preço do Notebook
+        // Saída: 3200.0
+
+        // b) TODO: orElse — preço do Tablet com fallback 0.0
+        double precoB = 0;
+        System.out.println(precoB); // 0.0
+
+        // c) TODO: orElseGet — Supplier retorna Double.NaN
+        double precoC = 0;
+        System.out.println(precoC); // NaN
+
+        // d) TODO: orElseThrow — capturar IllegalArgumentException e imprimir mensagem
+        // Saída: Produto não encontrado
+
+        // e) TODO: implementar descrever() e testar com Notebook e Tablet
+        System.out.println(descrever(buscarPreco("Notebook"))); // Preço: R$ 3200.0
+        System.out.println(descrever(buscarPreco("Tablet")));   // Preço indisponível
+    }
+
+    static String descrever(Optional<Double> opt) {
+        // TODO: sem usar get() — use orElse ou map+orElse
+        return null;
+    }
+}
 ```
