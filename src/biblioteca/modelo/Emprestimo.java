@@ -100,8 +100,10 @@ public class Emprestimo implements Persistivel {
      */
     public boolean estaAtrasado() {
         // TODO Exercício 1a
-        return !isDevolvido() &&
-                LocalDateTime.now().isAfter(dataDevolucaoPrevista);
+        boolean passouDataEntrega = LocalDateTime.now().isAfter(dataDevolucaoPrevista);
+        boolean livroNaoDevolvido = dataDevolvido == null;
+
+        return livroNaoDevolvido && passouDataEntrega;
     }
 
     // -------------------------------------------------------------------------
@@ -127,15 +129,19 @@ public class Emprestimo implements Persistivel {
      */
     public BigDecimal calcularMulta() {
         // TODO Exercício 1b
+        //throw new UnsupportedOperationException("Não implementado — veja TODO Exercício 1b");
         if (!estaAtrasado()) {
             return BigDecimal.ZERO;
         }
 
-        LocalDateTime referencia = isDevolvido() ? dataDevolvido : LocalDateTime.now();
+        // verificar se empréstimos devolvidos atrasados podem retornar ZERO.
 
-        long dias = ChronoUnit.DAYS.between(
-                dataDevolucaoPrevista,
-                referencia);
+        LocalDateTime dataReferencia = LocalDateTime.now();
+        if (isDevolvido()){
+            dataReferencia = dataDevolvido;
+        }
+
+        long dias = ChronoUnit.DAYS.between(dataDevolucaoPrevista, dataReferencia);
 
         return MULTA_POR_DIA.multiply(BigDecimal.valueOf(dias));
     }
@@ -168,24 +174,24 @@ public class Emprestimo implements Persistivel {
      */
     @Override
     public String toString() {
+        // TODO Exercício 1c
+        //throw new UnsupportedOperationException("Não implementado — veja TODO Exercício 1c");
+        DateTimeFormatter padraoDeFormatacao = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+        String dataDevolucaoPrevistaFormatada = dataDevolucaoPrevista.format(padraoDeFormatacao);
+        String dataDevolvidoFormatado = dataDevolvido.format(padraoDeFormatacao);
+        String multaFormatada = String.format("%.2f", calcularMulta());
 
-        String base = "Empréstimo #" + id +
-                " | Livro: " + livroId +
-                " | Usuário: " + usuarioId +
-                " | Vence: " + dataDevolucaoPrevista.format(formatter);
+        String resumoEmprestimo = "Empréstimo #" + id + " | Livro: " + livroId + " | Usuário: " + usuarioId + " | Vence: " + dataDevolucaoPrevistaFormatada;
 
-        if (isDevolvido()) {
-            return base + " | Devolvido: "
-                    + dataDevolvido.format(formatter);
+        if (isDevolvido()){
+            resumoEmprestimo = resumoEmprestimo + " | Devolvido: " + dataDevolvidoFormatado;
+        }
+        else if (estaAtrasado()){
+            resumoEmprestimo = resumoEmprestimo + " | ATRASADO | Multa: R$ " + multaFormatada;
         }
 
-        if (estaAtrasado()) {
-            return base + " | ATRASADO | Multa: R$ "
-                    + calcularMulta();
-        }
-
-        return base;
+        return resumoEmprestimo;
+            
     }
 }
