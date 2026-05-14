@@ -1,0 +1,60 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Gerar artefato e release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Baixar código
+        uses: actions/checkout@v4
+
+      - name: Configurar Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Definir versão
+        run: |
+          echo "VERSION=${GITHUB_REF_NAME#v}" >> $GITHUB_ENV
+
+      - name: Compilar projeto
+        run: |
+          mkdir -p out dist
+          javac -encoding UTF-8 -d out \
+            src/simplodb/*.java \
+            src/biblioteca/modelo/*.java \
+            src/biblioteca/repositorio/*.java \
+            src/biblioteca/servico/*.java \
+            src/Main.java
+
+      - name: Gerar JAR
+        run: |
+          jar --create \
+            --file dist/biblioteca-go-javeiros-${{ env.VERSION }}.jar \
+            --main-class Main \
+            -C out .
+
+      - name: Salvar artefato do workflow
+        uses: actions/upload-artifact@v4
+        with:
+          name: biblioteca-go-javeiros-${{ env.VERSION }}
+          path: dist/biblioteca-go-javeiros-${{ env.VERSION }}.jar
+
+      - name: Criar release no GitHub
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "${{ github.ref_name }}" \
+            dist/biblioteca-go-javeiros-${{ env.VERSION }}.jar \
+            --title "Release ${{ github.ref_name }}" \
+            --notes "Release gerada automaticamente pelo GitHub Actions."

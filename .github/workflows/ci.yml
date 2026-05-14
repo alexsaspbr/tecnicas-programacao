@@ -1,0 +1,101 @@
+name: CI
+
+on:
+  pull_request:
+    branches:
+      - develop
+      - main
+  push:
+    branches:
+      - develop
+      - main
+
+jobs:
+  build-develop:
+    name: Build - develop
+    if: github.base_ref == 'develop' || github.ref == 'refs/heads/develop'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Baixar código
+        uses: actions/checkout@v4
+
+      - name: Configurar Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Compilar projeto
+        run: |
+          mkdir -p out
+          javac -encoding UTF-8 -d out \
+            src/simplodb/*.java \
+            src/biblioteca/modelo/*.java \
+            src/biblioteca/repositorio/*.java \
+            src/biblioteca/servico/*.java \
+            src/Main.java
+
+      - name: Executar testes unitarios
+        run: |
+          javac -encoding UTF-8 -cp out -d out $(find test -name "*.java")
+          java -Dfile.encoding=UTF-8 -cp out TestRunner
+
+  validate-main:
+    name: Validate - main
+    if: github.base_ref == 'main' || github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Baixar código
+        uses: actions/checkout@v4
+
+      - name: Configurar Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Compilar projeto
+        run: |
+          mkdir -p out
+          javac -encoding UTF-8 -d out \
+            src/simplodb/*.java \
+            src/biblioteca/modelo/*.java \
+            src/biblioteca/repositorio/*.java \
+            src/biblioteca/servico/*.java \
+            src/Main.java
+
+      - name: Executar testes unitarios
+        run: |
+          javac -encoding UTF-8 -cp out -d out $(find test -name "*.java")
+          java -Dfile.encoding=UTF-8 -cp out TestRunner
+
+      - name: Executar Main
+        run: |
+          rm -rf db
+          mkdir -p db
+          java -Dfile.encoding=UTF-8 -cp out Main > output.txt
+
+      - name: Comparar saída esperada ignorando datas e listas
+        run: |
+          sed -E \
+            -e 's/[0-9]{2}\/[0-9]{2}\/[0-9]{4} [0-9]{2}:[0-9]{2}/<DATA_HORA>/g' \
+            -e 's/Romance: \[[^]]*\]/Romance: <LISTA_IGNORADA>/g' \
+            -e 's/Poesia: \[[^]]*\]/Poesia: <LISTA_IGNORADA>/g' \
+            -e 's/Top 5 mais emprestados: \[[^]]*\]/Top 5 mais emprestados: <LISTA_IGNORADA>/g' \
+            -e 's/Gêneros disponíveis: \[[^]]*\]/Gêneros disponíveis: <LISTA_IGNORADA>/g' \
+            expected/expected-output.txt > expected-normalized.txt
+
+          sed -E \
+            -e 's/[0-9]{2}\/[0-9]{2}\/[0-9]{4} [0-9]{2}:[0-9]{2}/<DATA_HORA>/g' \
+            -e 's/Romance: \[[^]]*\]/Romance: <LISTA_IGNORADA>/g' \
+            -e 's/Poesia: \[[^]]*\]/Poesia: <LISTA_IGNORADA>/g' \
+            -e 's/Top 5 mais emprestados: \[[^]]*\]/Top 5 mais emprestados: <LISTA_IGNORADA>/g' \
+            -e 's/Gêneros disponíveis: \[[^]]*\]/Gêneros disponíveis: <LISTA_IGNORADA>/g' \
+            output.txt > output-normalized.txt
+
+          if ! diff -u --strip-trailing-cr expected-normalized.txt output-normalized.txt; then
+            echo "Saída do programa não corresponde à saída esperada."
+            exit 1
+          fi

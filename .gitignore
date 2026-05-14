@@ -31,3 +31,6 @@ bin/
 
 .idea/
 *.iml
+
+### SimploDB — banco de dados local (não commitar)
+db/
