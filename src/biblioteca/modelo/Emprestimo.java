@@ -128,20 +128,15 @@ public class Emprestimo implements Persistivel {
      * 4. Retorne MULTA_POR_DIA.multiply(BigDecimal.valueOf(dias))
      */
     public BigDecimal calcularMulta() {
-        // TODO Exercício 1b
-        //throw new UnsupportedOperationException("Não implementado — veja TODO Exercício 1b");
         if (!estaAtrasado()) {
             return BigDecimal.ZERO;
         }
 
-        // verificar se empréstimos devolvidos atrasados podem retornar ZERO.
+        LocalDateTime referencia = isDevolvido() ? dataDevolvido : LocalDateTime.now();
 
-        LocalDateTime dataReferencia = LocalDateTime.now();
-        if (isDevolvido()){
-            dataReferencia = dataDevolvido;
-        }
-
-        long dias = ChronoUnit.DAYS.between(dataDevolucaoPrevista, dataReferencia);
+        long dias = ChronoUnit.DAYS.between(
+                dataDevolucaoPrevista,
+                referencia);
 
         return MULTA_POR_DIA.multiply(BigDecimal.valueOf(dias));
     }
@@ -174,24 +169,23 @@ public class Emprestimo implements Persistivel {
      */
     @Override
     public String toString() {
-        // TODO Exercício 1c
-        //throw new UnsupportedOperationException("Não implementado — veja TODO Exercício 1c");
-        DateTimeFormatter padraoDeFormatacao = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
-        String dataDevolucaoPrevistaFormatada = dataDevolucaoPrevista.format(padraoDeFormatacao);
-        String dataDevolvidoFormatado = dataDevolvido.format(padraoDeFormatacao);
-        String multaFormatada = String.format("%.2f", calcularMulta());
+        String base = "Empréstimo #" + id +
+                " | Livro: " + livroId +
+                " | Usuário: " + usuarioId +
+                " | Vence: " + dataDevolucaoPrevista.format(formatter);
 
-        String resumoEmprestimo = "Empréstimo #" + id + " | Livro: " + livroId + " | Usuário: " + usuarioId + " | Vence: " + dataDevolucaoPrevistaFormatada;
-
-        if (isDevolvido()){
-            resumoEmprestimo = resumoEmprestimo + " | Devolvido: " + dataDevolvidoFormatado;
-        }
-        else if (estaAtrasado()){
-            resumoEmprestimo = resumoEmprestimo + " | ATRASADO | Multa: R$ " + multaFormatada;
+        if (isDevolvido()) {
+            return base + " | Devolvido: "
+                    + dataDevolvido.format(formatter);
         }
 
-        return resumoEmprestimo;
-            
+        if (estaAtrasado()) {
+            return base + " | ATRASADO | Multa: R$ "
+                    + calcularMulta();
+        }
+
+        return base;
     }
 }
